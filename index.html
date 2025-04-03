@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Website</title>    
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .sidebar {
+            width: 20%;
+            padding: 10px;
+            background-color: #e0e0e0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            border-right: 1px solid #ccc;
+        }
+
+        .main {
+            width: 80%;
+            display: flex;
+        }
+
+        .grid-container {
+            width: 30%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            background-color: #ffffff;
+            border-right: 1px solid #ccc;
+            overflow-y: auto;
+        }
+
+        .threeD-container {
+            width: 70%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #ffffff;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .section {
+            margin-bottom: 8px;
+        }
+
+        .section h2 {
+            font-size: 13px;
+            color: #191818;
+            margin-bottom: 5px;
+        }
+
+        .subsection {
+            margin-bottom: 8px;
+        }
+
+        .subsection h3 {
+            font-size: 12px;
+            color: #393939;
+            margin-bottom: 5px;
+        }
+
+        button, select {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 4px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        /* 分割线 */
+        .hr {
+            border: 0;
+            height: 1px;
+            background: #221f1f;
+            margin: 8px 0;
+        }
+
+        /* 按钮颜色 */
+        .btn-select {
+            background-color: #f6f8ee;
+            color: #2d2929;
+        }
+
+        .btn-select:disabled {
+            background-color: #f2f0e4;
+        }
+
+        .btn-select:not(:disabled):hover {
+            background-color: #898d7c;
+        }
+
+        .btn-generate {
+            background-color: #f4fae9;
+            color: #3c3737;
+        }
+
+        .btn-generate:disabled {
+            background-color: #fceed1;
+        }
+
+        .btn-generate:not(:disabled):hover {
+            background-color: #eee1ce;
+        }
+
+        .btn-select-room {
+            background-color: #a8b0a0;
+            color: #ffffff;
+        }
+
+        .btn-select-room:disabled {
+            background-color: #c8d1c1;
+        }
+
+        .btn-select-room:not(:disabled):hover {
+            background-color: #bac8b9;
+        }
+
+        .layer-label {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .canvas-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="section">
+            <h2>层数选择</h2>
+            <div class="subsection">
+                <label for="layerSelect">选择层数:</label>
+                <select id="layerSelect" class="btn-select" aria-label="选择层数">
+                    <option value="1">一层</option>
+                    <option value="2">两层</option>
+                    <option value="3">三层</option>
+                    <option value="4">四层</option>
+                    <option value="5">五层</option>
+                    <option value="6">六层</option>
+                </select>
+            </div>
+        </div>
+        <div class="section">
+            <h2>宅基地和房屋选择</h2>
+            <div class="subsection">
+                <h3>选择模块</h3>
+                <button id="startSelection" class="btn-select">开始选择</button>
+                <button id="endSelection" class="btn-select" disabled>结束选择</button>
+            </div>
+            <div class="subsection">
+                <h3>生成模块</h3>
+                <button id="generateWalls" class="btn-generate" disabled>生成外墙</button>
+                <button id="generateFence" class="btn-generate" disabled>生成院墙</button>
+            </div>
+        </div>
+        <hr class="hr">
+        <div class="section">
+            <h2>房屋内部选择</h2>
+            <div class="subsection">
+                <h3>选择模块</h3>
+                <button id="bedroom" class="btn-select-room" disabled>卧室</button>
+                <button id="endBedroomSelection" class="btn-select-room" disabled>结束卧室选择</button>
+                <button id="livingRoom" class="btn-select-room" disabled>堂屋</button>
+                <button id="endLivingRoomSelection" class="btn-select-room" disabled>结束堂屋选择</button>
+                <button id="diningRoom" class="btn-select-room" disabled>餐厅</button>
+                <button id="endDiningRoomSelection" class="btn-select-room" disabled>结束餐厅选择</button>
+                <button id="bathroom" class="btn-select-room" disabled>厕所</button>
+                <button id="endBathroomSelection" class="btn-select-room" disabled>结束厕所选择</button>
+                <button id="corridor" class="btn-select-room" disabled>交通</button>
+                <button id="endCorridorSelection" class="btn-select-room" disabled>结束交通选择</button>
+                <button id="storage" class="btn-select-room" disabled>储藏</button>
+                <button id="endStorageSelection" class="btn-select-room" disabled>结束储藏选择</button>
+            </div>
+            <div class="subsection">
+                <h3>生成模块</h3>
+                <button id="generateInteriorWalls" class="btn-generate" disabled>生成内墙</button>
+            </div>
+        </div>
+    </div>
+    <div class="main">
+        <div class="grid-container" id="gridContainer">
+            <!-- 动态生成二维网格 -->
+        </div>
+        <div class="threeD-container">
+            <canvas id="threeDCanvas"></canvas>
+        </div>
+    </div>
+   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="{{ url_for('static', filename='csg-lib.js') }}"></script>
+    <script src="{{ url_for('static', filename='csg-worker.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/manthrax/THREE-CSGMesh/three-csgmesh.min.js"></script>
+    <script src="{{ url_for('static', filename='Functions.js') }}"></script>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>
